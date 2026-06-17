@@ -1,0 +1,22 @@
+=== Port Scan Report ===
+Target:  127.0.0.1
+Ports:   14 scanned
+Started: 2026-06-17 11:12:50
+----------------------------------------
+[closed] Port    21 → FTP
+[closed] Port    22 → SSH
+[closed] Port    23 → Telnet
+[closed] Port    25 → SMTP
+[closed] Port    53 → DNS
+[closed] Port    80 → HTTP
+[closed] Port   110 → POP3
+[closed] Port   143 → IMAP
+[closed] Port   443 → HTTPS
+[closed] Port  3306 → MySQL
+[closed] Port  3389 → RDP
+[closed] Port  5432 → PostgreSQL
+[OPEN]   Port  8080 → HTTP-Alt
+[closed] Port  8443 → HTTPS-Alt
+----------------------------------------
+Scan complete in 13s.
+Open ports (1): [8080]
