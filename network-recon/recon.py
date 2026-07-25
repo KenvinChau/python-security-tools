@@ -117,6 +117,33 @@ def scan_ports(host):
     return open_ports
 
 
+
+def grab_banner(host, port):
+    """
+    Attempts to grab the service banner from an open port.
+    Handles SSH (sends immediately) differently from HTTP services.
+    """
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(3)
+        sock.connect((host, port))
+
+        # SSH sends banner immediately on connect — just receive
+        if port == 22:
+            banner = sock.recv(1024).decode("utf-8", errors="ignore").strip()
+            sock.close()
+            return banner
+
+        # HTTP services need a request to respond
+        sock.send(b"HEAD / HTTP/1.0\r\n\r\n")
+        banner = sock.recv(1024).decode("utf-8", errors="ignore").strip()
+        sock.close()
+        return banner
+
+    except Exception:
+        return None
+
+
 # ── HTTP Header Grab ───────────────────────────────────────
 
 SECURITY_HEADERS = [
@@ -203,6 +230,8 @@ def generate_report(target, ip, alive, ttl, os_guess, open_ports, http):
         if open_ports:
             for p in open_ports:
                 f.write(f"  {p['port']:5} → {p['service']}\n")
+                if p.get("banner"):
+                    f.write(f"          Banner: {p['banner']}\n")
         else:
             f.write("  None found\n")
         f.write("\n")
@@ -248,6 +277,18 @@ def main():
 
     # Step 3 — Port scan
     open_ports = scan_ports(ip)
+
+    # Banner grabbing on open ports
+    if open_ports:
+        print(f"\n[*] Grabbing banners from open ports...")
+        for entry in open_ports:
+            banner = grab_banner(ip, entry["port"])
+            if banner:
+                first_line = banner.split("\n")[0]
+                print(f"[+] Port {entry['port']} banner: {first_line}")
+                entry["banner"] = first_line
+            else:
+                entry["banner"] = None
 
     # Step 4 — HTTP info if web ports open
     http = grab_http_info(ip, open_ports)

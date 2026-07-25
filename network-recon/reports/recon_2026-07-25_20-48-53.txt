@@ -1,0 +1,32 @@
+==================================================
+NETWORK RECON REPORT
+==================================================
+Target:    scanme.nmap.org
+IP:        45.33.32.156
+Date:      2026-07-25 20:48:53
+
+--------------------------------------------------
+HOST DISCOVERY
+--------------------------------------------------
+Status:    UP
+TTL:       37
+OS Guess:  Linux / macOS
+
+--------------------------------------------------
+OPEN PORTS
+--------------------------------------------------
+     22 → SSH
+          Banner: SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2.13
+     80 → HTTP
+          Banner: HTTP/1.1 200 OK
+
+--------------------------------------------------
+HTTP FINDINGS
+--------------------------------------------------
+URL:       http://45.33.32.156
+Status:    200
+Server:    Apache/2.4.7 (Ubuntu)
+Missing headers: Strict-Transport-Security, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy
+
+==================================================
+END OF REPORT
