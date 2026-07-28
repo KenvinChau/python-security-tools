@@ -3,16 +3,17 @@
 
 import datetime
 import os
+import re
+import requests
 from modules.recon import get_target_info
 from modules.header_checker import check_security_headers
-from modules.path_scanner import scan_paths
 from modules.path_scanner import scan_paths, fetch_robots
 from modules.sqli_tester import test_sqli
 from modules.xss_tester import test_xss
 from modules.traversal_tester import test_traversal
 
 
-def generate_report(target, recon, headers, paths):
+def generate_report(target, recon, headers, paths, vulns):
     """
     Generates a timestamped text report of all findings.
     """
@@ -75,10 +76,54 @@ def generate_report(target, recon, headers, paths):
             f.write("No interesting paths found.\n")
 
         f.write("\n")
+
+        # Vulnerabilities section
+        f.write("-" * 50 + "\n")
+        f.write("VULNERABILITIES\n")
+        f.write("-" * 50 + "\n")
+
+        if vulns:
+            for v in vulns:
+                f.write(f"[!] {v['type']}\n")
+                f.write(f"    Parameter: {v['parameter']}\n")
+                f.write(f"    Payload:   {v['payload']}\n")
+                f.write(f"    Evidence:  {v['evidence']}\n")
+                f.write(f"    URL:       {v['url']}\n\n")
+        else:
+            f.write("No vulnerabilities detected.\n")
+
+        f.write("\n")
         f.write("=" * 50 + "\n")
         f.write("END OF REPORT\n")
 
     return filename
+
+
+def get_dvwa_session(base_url):
+    """
+    Logs into DVWA and returns an authenticated session object.
+    A session automatically carries cookies across all requests.
+    """
+    session = requests.Session()
+    login_url = f"{base_url}/login.php"
+
+    # First GET to grab the CSRF token DVWA requires
+    response = session.get(login_url, timeout=5)
+
+    # Extract user_token from the login form
+    token_match = re.search(r"user_token.*?value='([a-f0-9]+)'", response.text)
+    token = token_match.group(1) if token_match else ""
+
+    # POST login credentials
+    session.post(login_url, data={
+        "username": "admin",
+        "password": "password",
+        "Login": "Login",
+        "user_token": token
+    })
+
+    print("[+] Authenticated with DVWA")
+    return session
 
 
 def main():
@@ -87,15 +132,15 @@ def main():
     print("  Educational use only")
     print("=" * 50)
 
-    print("\nDefault target: http://testphp.vulnweb.com")
+    print("\nDefault target: http://localhost")
     custom = input("Press Enter to use default or type a URL: ").strip()
 
-    target = custom if custom else "http://testphp.vulnweb.com"
+    target = custom if custom else "http://localhost"
 
     if not target.startswith("http"):
         target = "http://" + target
 
-    # Run all modules
+    # Run recon modules
     recon = get_target_info(target)
 
     if not recon["reachable"]:
@@ -106,17 +151,33 @@ def main():
     paths = scan_paths(target)
     robots = fetch_robots(target)
 
-    # Vulnerability testing
-    sqli_findings = test_sqli(target)
-    xss_findings = test_xss(target)
-    traversal_findings = test_traversal(target)
+    # Authenticate and run vulnerability tests
+    print("\n[*] Running targeted vulnerability tests...")
+    session = get_dvwa_session(target)
 
-    # Combine all vulnerability findings
+    sqli_findings = test_sqli(
+        "http://localhost/vulnerabilities/sqli/",
+        params={"id": "1", "Submit": "Submit"},
+        session=session
+    )
+
+    xss_findings = test_xss(
+        "http://localhost/vulnerabilities/xss_r/",
+        params={"name": "test"},
+        session=session
+    )
+
+    traversal_findings = test_traversal(
+        "http://localhost/vulnerabilities/fi/",
+        params={"page": "include.php"},
+        session=session
+    )
+
     vuln_findings = sqli_findings + xss_findings + traversal_findings
 
     # Generate report
     print("\n[*] Generating report...")
-    filename = generate_report(target, recon, headers, paths)
+    filename = generate_report(target, recon, headers, paths, vuln_findings)
     print(f"[+] Report saved to: {filename}")
 
     # Summary

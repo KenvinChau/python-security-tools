@@ -1,10 +1,6 @@
 # modules/sqli_tester.py
-# Tests for SQL injection vulnerabilities
-# Sends test payloads and looks for database error messages in responses
-
 import requests
 
-# Payloads that commonly trigger SQL errors
 SQLI_PAYLOADS = [
     "'",
     "''",
@@ -15,8 +11,6 @@ SQLI_PAYLOADS = [
     "1' ORDER BY 2--",
 ]
 
-# Error messages that appear in responses when SQL injection works
-# Each tuple is (database_type, error_string_to_look_for)
 SQLI_ERRORS = [
     ("MySQL",      "you have an error in your sql syntax"),
     ("MySQL",      "warning: mysql"),
@@ -34,24 +28,18 @@ SQLI_ERRORS = [
 ]
 
 
-def test_sqli(url, params=None):
+def test_sqli(url, params=None, session=None):
     """
     Tests a URL for SQL injection vulnerabilities.
-    Injects payloads into URL parameters and checks responses for DB errors.
-    
-    Args:
-        url: target URL
-        params: dict of parameters to test e.g. {"id": "1", "search": "test"}
-                If None, tries to extract params from the URL itself.
-    
-    Returns:
-        list of findings
+    Pass a requests.Session object if the target requires authentication.
     """
     print(f"\n[*] Testing for SQL injection on {url}...")
 
+    # Use the authenticated session if provided, otherwise use plain requests
+    client = session if session else requests
+
     findings = []
 
-    # If no params provided, try common parameter names
     if not params:
         params = {"id": "1", "search": "test", "q": "test", "user": "test"}
 
@@ -61,7 +49,7 @@ def test_sqli(url, params=None):
             test_params[param_name] = payload
 
             try:
-                response = requests.get(url, params=test_params, timeout=5)
+                response = client.get(url, params=test_params, timeout=5)
                 body = response.text.lower()
 
                 for db_type, error_string in SQLI_ERRORS:

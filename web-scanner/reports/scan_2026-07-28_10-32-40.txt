@@ -1,0 +1,100 @@
+==================================================
+WEB VULNERABILITY SCANNER REPORT
+==================================================
+Target:  http://localhost
+Date:    2026-07-28 10:32:40
+
+--------------------------------------------------
+RECONNAISSANCE
+--------------------------------------------------
+Status Code:    200
+Server:         Apache/2.4.25 (Debian)
+Content-Type:   text/html;charset=utf-8
+Content-Length: 1523 chars
+Redirects to:   http://localhost/login.php
+
+--------------------------------------------------
+SECURITY HEADERS
+--------------------------------------------------
+Present: 0/6
+
+[MISSING] [HIGH] Strict-Transport-Security
+          Forces HTTPS connections
+[MISSING] [HIGH] Content-Security-Policy
+          Prevents XSS attacks
+[MISSING] [MEDIUM] X-Frame-Options
+          Prevents clickjacking
+[MISSING] [MEDIUM] X-Content-Type-Options
+          Prevents MIME sniffing
+[MISSING] [LOW] Referrer-Policy
+          Controls referrer information
+[MISSING] [LOW] Permissions-Policy
+          Controls browser features
+
+--------------------------------------------------
+PATH SCAN
+--------------------------------------------------
+[301] REDIRECT   http://localhost/config
+[200] FOUND      http://localhost/robots.txt
+[403] FORBIDDEN  http://localhost/server-status
+
+--------------------------------------------------
+VULNERABILITIES
+--------------------------------------------------
+[!] Reflected XSS
+    Parameter: name
+    Payload:   <script>alert('xss')</script>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%3Cscript%3Ealert%28%27d6e6c087%27%29%3C%2Fscript%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   <img src=x onerror=alert('xss')>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%3Cimg+src%3Dx+onerror%3Dalert%28%276f3bcdb8%27%29%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   '><script>alert('xss')</script>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%27%3E%3Cscript%3Ealert%28%27449f4ac0%27%29%3C%2Fscript%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   "><script>alert('xss')</script>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%22%3E%3Cscript%3Ealert%28%2756b0d7f6%27%29%3C%2Fscript%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   <svg onload=alert('xss')>
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=%3Csvg+onload%3Dalert%28%27e68bc0d0%27%29%3E
+
+[!] Reflected XSS
+    Parameter: name
+    Payload:   javascript:alert('xss')
+    Evidence:  Payload reflected unencoded in response
+    URL:       http://localhost/vulnerabilities/xss_r/?name=javascript%3Aalert%28%273c1cf744%27%29
+
+[!] Directory Traversal
+    Parameter: page
+    Payload:   ../../../../../../etc/passwd
+    Evidence:  Content of etc/passwd found in response
+    URL:       http://localhost/vulnerabilities/fi/?page=..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd
+
+[!] Directory Traversal
+    Parameter: page
+    Payload:   ../../../../../../etc/hosts
+    Evidence:  Content of etc/hosts found in response
+    URL:       http://localhost/vulnerabilities/fi/?page=..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fhosts
+
+[!] Directory Traversal
+    Parameter: page
+    Payload:   ../../../../../../proc/version
+    Evidence:  Content of proc/version found in response
+    URL:       http://localhost/vulnerabilities/fi/?page=..%2F..%2F..%2F..%2F..%2F..%2Fproc%2Fversion
+
+
+==================================================
+END OF REPORT

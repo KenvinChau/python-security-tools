@@ -1,11 +1,7 @@
 # modules/xss_tester.py
-# Tests for reflected XSS vulnerabilities
-# Injects a unique marker and checks if it appears unencoded in the response
-
 import requests
 import uuid
 
-# XSS payloads — chosen to be detectable without being harmful
 XSS_PAYLOADS = [
     "<script>alert('xss')</script>",
     "<img src=x onerror=alert('xss')>",
@@ -15,7 +11,6 @@ XSS_PAYLOADS = [
     "javascript:alert('xss')",
 ]
 
-# If any of these appear in the response, the payload was NOT sanitised
 XSS_INDICATORS = [
     "<script>alert(",
     "onerror=alert(",
@@ -24,22 +19,14 @@ XSS_INDICATORS = [
 ]
 
 
-def test_xss(url, params=None):
+def test_xss(url, params=None, session=None):
     """
     Tests a URL for reflected XSS vulnerabilities.
-    Injects payloads and checks if they appear unencoded in the response.
-
-    Reflected XSS = the payload is sent in the request and reflected
-    back in the response. The most common and detectable type.
-
-    Args:
-        url: target URL  
-        params: dict of parameters to test
-
-    Returns:
-        list of findings
+    Pass a requests.Session object if the target requires authentication.
     """
     print(f"\n[*] Testing for XSS on {url}...")
+
+    client = session if session else requests
 
     findings = []
 
@@ -48,8 +35,6 @@ def test_xss(url, params=None):
 
     for param_name, original_value in params.items():
         for payload in XSS_PAYLOADS:
-
-            # Add a unique marker so we can confirm OUR payload reflected
             marker = str(uuid.uuid4())[:8]
             marked_payload = payload.replace("xss", marker)
 
@@ -57,12 +42,10 @@ def test_xss(url, params=None):
             test_params[param_name] = marked_payload
 
             try:
-                response = requests.get(url, params=test_params, timeout=5)
+                response = client.get(url, params=test_params, timeout=5)
                 body = response.text
 
-                # Check if our unique marker came back unencoded
                 if marker in body:
-                    # Check if it's inside an executable context
                     for indicator in XSS_INDICATORS:
                         sanitised_indicator = indicator.replace("xss", marker)
                         if sanitised_indicator in body:
@@ -70,7 +53,7 @@ def test_xss(url, params=None):
                                 "type": "Reflected XSS",
                                 "parameter": param_name,
                                 "payload": payload,
-                                "evidence": f"Payload reflected unencoded in response",
+                                "evidence": "Payload reflected unencoded in response",
                                 "url": response.url
                             }
                             findings.append(finding)
