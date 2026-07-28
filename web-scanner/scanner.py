@@ -7,6 +7,9 @@ from modules.recon import get_target_info
 from modules.header_checker import check_security_headers
 from modules.path_scanner import scan_paths
 from modules.path_scanner import scan_paths, fetch_robots
+from modules.sqli_tester import test_sqli
+from modules.xss_tester import test_xss
+from modules.traversal_tester import test_traversal
 
 
 def generate_report(target, recon, headers, paths):
@@ -103,6 +106,14 @@ def main():
     paths = scan_paths(target)
     robots = fetch_robots(target)
 
+    # Vulnerability testing
+    sqli_findings = test_sqli(target)
+    xss_findings = test_xss(target)
+    traversal_findings = test_traversal(target)
+
+    # Combine all vulnerability findings
+    vuln_findings = sqli_findings + xss_findings + traversal_findings
+
     # Generate report
     print("\n[*] Generating report...")
     filename = generate_report(target, recon, headers, paths)
@@ -117,6 +128,7 @@ def main():
     print("=" * 50)
     print(f"High severity header issues: {len(missing_high)}")
     print(f"Interesting paths found:     {len(interesting_paths)}")
+    print(f"Vulnerabilities found:       {len(vuln_findings)}")
     print(f"Full report:                 {filename}")
 
 

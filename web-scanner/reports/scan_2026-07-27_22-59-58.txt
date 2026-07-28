@@ -1,0 +1,40 @@
+==================================================
+WEB VULNERABILITY SCANNER REPORT
+==================================================
+Target:  http://httpbin.org
+Date:    2026-07-27 22:59:58
+
+--------------------------------------------------
+RECONNAISSANCE
+--------------------------------------------------
+Status Code:    200
+Server:         gunicorn/19.9.0
+Content-Type:   text/html; charset=utf-8
+Content-Length: 9591 chars
+Redirects to:   http://httpbin.org/
+
+--------------------------------------------------
+SECURITY HEADERS
+--------------------------------------------------
+Present: 0/6
+
+[MISSING] [HIGH] Strict-Transport-Security
+          Forces HTTPS connections
+[MISSING] [HIGH] Content-Security-Policy
+          Prevents XSS attacks
+[MISSING] [MEDIUM] X-Frame-Options
+          Prevents clickjacking
+[MISSING] [MEDIUM] X-Content-Type-Options
+          Prevents MIME sniffing
+[MISSING] [LOW] Referrer-Policy
+          Controls referrer information
+[MISSING] [LOW] Permissions-Policy
+          Controls browser features
+
+--------------------------------------------------
+PATH SCAN
+--------------------------------------------------
+[200] FOUND      http://httpbin.org/robots.txt
+
+==================================================
+END OF REPORT
