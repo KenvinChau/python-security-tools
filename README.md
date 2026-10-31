@@ -1,43 +1,35 @@
 # Python Security Tools
 
-A collection of security-focused Python tools built while learning Python
-for a cybersecurity career path. Each tool demonstrates practical application
-of core Python concepts.
+Small command-line security tools written in Python, using only the standard library.
 
 ## Tools
 
-### 🔐 Password Strength Analyser
+| Tool | What it does |
+|---|---|
+| **Password Strength Analyser** | Scores a password out of 7 on length, character variety and special characters, and suggests improvements. |
+| **Password Generator** | Generates random passwords with input validation and error handling. |
+| **Port Scanner** | Scans a host for open ports, identifies common services, and saves a timestamped report. Built on Python's `socket` module. |
 
-Analyses passwords against multiple criteria including length, character variety,
-and special characters. Returns a score out of 7 with improvement suggestions.
+## Usage
 
-**Concepts:** functions, conditionals, loops, string methods
+Each tool is a standalone script in this repository. Clone the repo, then run the script for the tool you want with `python3` followed by the file name.
 
-### 🔑 Password Generator
+```bash
+git clone https://github.com/KenvinChau/python-security-tools
+cd python-security-tools
+```
 
-Generates cryptographically random passwords using Python's `random` and `string`
-modules. Includes input validation and error handling.
+Requires Python 3. No external dependencies.
 
-**Concepts:** modules, error handling, while loops
+## Related projects
 
-### 🔍 Port Scanner
+More security projects, including a web vulnerability scanner (SQL injection, XSS and directory traversal detection) and a network reconnaissance toolkit (DNS, OS fingerprinting, port scanning), are available on my [GitHub profile](https://github.com/KenvinChau?tab=repositories).
 
-Scans a target host for open ports and identifies running services.
-Saves timestamped reports to disk. Built using Python's `socket` module.
+## Possible improvements
 
-**Concepts:** socket programming, file I/O, dictionaries, functions
+- Multithreaded port scanning for speed
+- Checking passwords against a list of known breached passwords
 
-## Tech Stack
+## Legal notice
 
-- Python 3.x
-- Standard library only (no external dependencies)
-
-## Purpose
-
-Built as part of a structured cybersecurity learning roadmap targeting
-a security internship at Swedish tech companies (Ericsson, Axis, Sectra, SAAB).
-
-## ⚠️ Legal Notice
-
-These tools are for educational purposes only. Only run scanners against
-systems you own or have explicit permission to test.
+For educational use. Only scan systems you own or have explicit permission to test.
